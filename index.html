@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manuale Spin &amp; Go</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --carta:#EFF0EC; --carta-alt:#E4E7E1;
+  --inchiostro:#14201B; --inchiostro-soft:#4A5852;
+  --feltro:#1F4436; --ocra:#C8A13A; --linea:#D2D6CE;
+  --sans:'Archivo',system-ui,sans-serif; --serif:'Source Serif 4',Georgia,serif;
+  --nav-w:255px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--carta);color:var(--inchiostro);font-family:var(--serif);font-size:17px;line-height:1.65}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.wrap{display:flex;min-height:100vh}
+nav{width:var(--nav-w);flex:0 0 var(--nav-w);border-right:1px solid var(--linea);padding:1.6rem 1.1rem 3rem;position:sticky;top:0;height:100vh;overflow-y:auto;font-family:var(--sans);font-size:14.5px}
+nav .marchio{font-weight:700;font-size:17px;letter-spacing:-.01em;line-height:1.25}
+nav .marchio span{display:block;color:var(--feltro)}
+nav .sotto{color:var(--inchiostro-soft);font-size:12.5px;margin:.15rem 0 1.1rem}
+nav h4{font-size:12.5px;font-weight:600;color:var(--inchiostro-soft);margin:1.5rem 0 .45rem;padding-bottom:.3rem;border-bottom:1px solid var(--linea)}
+nav a{display:block;padding:.32rem .5rem;margin:0 -.5rem;color:var(--inchiostro);text-decoration:none;border-radius:3px;line-height:1.35}
+nav a:hover{background:var(--carta-alt)}
+nav a.attivo{background:var(--feltro);color:#fff}
+nav a.futura{color:#98A39C;pointer-events:none}
+nav a.futura::after{content:' · in arrivo';font-size:11px}
+
+.lingua{display:flex;align-items:center;gap:.4rem;font-size:12.5px;color:var(--inchiostro-soft);margin-bottom:.4rem}
+.lingua button{font-family:var(--sans);font-size:12px;font-weight:600;padding:.18rem .45rem;border:1px solid var(--linea);background:#fff;color:var(--inchiostro-soft);cursor:pointer;border-radius:3px}
+.lingua button.on{background:var(--feltro);color:#fff;border-color:var(--feltro)}
+
+main{flex:1;min-width:0;padding:2.6rem 2.4rem 6rem;max-width:1040px}
+article{max-width:66ch}
+
+h1{font-family:var(--sans);font-weight:700;font-size:2.15rem;line-height:1.12;letter-spacing:-.02em;margin:0 0 .3rem}
+h2{font-family:var(--sans);font-weight:600;font-size:1.3rem;line-height:1.25;margin:2.6rem 0 .7rem;letter-spacing:-.01em}
+h3{font-family:var(--sans);font-weight:600;font-size:1.05rem;margin:1.8rem 0 .5rem}
+p{margin:0 0 1.05rem}
+ul{margin:0 0 1.1rem;padding-left:1.1rem} li{margin-bottom:.4rem}
+strong{font-weight:600}
+.occhiello{font-family:var(--sans);font-size:13px;color:var(--feltro);font-weight:600;margin-bottom:.55rem}
+.sommario{font-size:1.12rem;color:var(--inchiostro-soft);margin-bottom:2rem;max-width:58ch}
+blockquote{margin:1.5rem 0;padding:.9rem 1.1rem;background:var(--carta-alt);border-left:3px solid var(--feltro);font-size:.96rem}
+blockquote p:last-child{margin:0}
+.fonte{font-size:.85rem;color:var(--inchiostro-soft);border-top:1px solid var(--linea);padding-top:.8rem;margin-top:3rem}
+
+.termine{border:0;border-bottom:1.5px dotted var(--ocra);cursor:pointer;color:inherit;background:none;font:inherit;padding:0}
+.termine:hover,.termine:focus-visible{background:rgba(200,161,58,.22);outline:none}
+
+#suggerimento{position:fixed;z-index:60;max-width:320px;background:var(--inchiostro);color:#F2F3F0;font-family:var(--sans);font-size:13.5px;line-height:1.45;padding:.6rem .75rem;border-radius:5px;pointer-events:none;opacity:0;transition:opacity .11s;box-shadow:0 6px 22px rgba(20,32,27,.28)}
+#suggerimento.on{opacity:1}
+#suggerimento b{display:block;color:var(--ocra);font-weight:600}
+#suggerimento u{display:block;text-decoration:none;color:#8E9C94;font-size:11.5px;margin-bottom:.3rem}
+#suggerimento i{display:block;font-style:normal;color:#8E9C94;font-size:11.5px;margin-top:.4rem}
+
+#velo{position:fixed;inset:0;background:rgba(20,32,27,.32);opacity:0;pointer-events:none;transition:opacity .2s;z-index:70}
+#velo.on{opacity:1;pointer-events:auto}
+#pannello{position:fixed;top:0;right:0;bottom:0;width:400px;max-width:92vw;z-index:80;background:var(--carta);border-left:1px solid var(--linea);transform:translateX(100%);transition:transform .22s ease;overflow-y:auto;padding:1.6rem 1.5rem 3rem;box-shadow:-10px 0 34px rgba(20,32,27,.14)}
+#pannello.on{transform:none}
+#pannello .chiudi{position:absolute;top:1rem;right:1.1rem;border:1px solid var(--linea);background:none;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px;color:var(--inchiostro-soft)}
+#pannello .categoria{font-family:var(--sans);font-size:12px;color:var(--feltro);font-weight:600;margin-bottom:.3rem}
+#pannello h3{font-family:var(--sans);font-size:1.35rem;margin:0}
+#pannello .altralingua{font-family:var(--sans);font-size:14px;color:var(--inchiostro-soft);margin:.1rem 0 .9rem}
+#pannello .collegati{margin-top:1.6rem;border-top:1px solid var(--linea);padding-top:.9rem}
+#pannello .collegati span{font-family:var(--sans);font-size:12.5px;color:var(--inchiostro-soft);display:block;margin-bottom:.5rem}
+.pillola{display:inline-block;font-family:var(--sans);font-size:13px;border:1px solid var(--linea);background:#fff;border-radius:3px;padding:.22rem .5rem;margin:0 .3rem .35rem 0;cursor:pointer;color:var(--inchiostro)}
+.pillola:hover{border-color:var(--feltro);background:var(--carta-alt)}
+
+.tabella{margin:2rem 0 2.6rem;max-width:640px}
+.tabella .testata{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;margin-bottom:.5rem;flex-wrap:wrap}
+.tabella .titolo{font-family:var(--sans);font-weight:600;font-size:1.02rem}
+.tabella .meta{font-family:var(--sans);font-size:12.5px;color:var(--inchiostro-soft)}
+.griglia{display:grid;grid-template-columns:repeat(13,1fr);gap:2px;font-family:var(--sans)}
+.cella{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:clamp(8px,1.3vw,11.5px);font-weight:500;border-radius:2px;font-variant-numeric:tabular-nums;user-select:none;color:#fff}
+.cella.chiaro{color:#1A2620}
+.cella.evidenzia{outline:3px solid #C8A13A;outline-offset:-1px;z-index:2}
+.cella.spenta{opacity:.15}
+.legenda{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.3rem .9rem;margin-top:.85rem;font-family:var(--sans);font-size:13px}
+.legenda i{display:inline-block;width:13px;height:13px;border-radius:2px;margin-right:.45rem;vertical-align:-2px}
+.legenda em{font-style:normal;color:var(--inchiostro-soft);font-variant-numeric:tabular-nums}
+.notaTab{font-size:.93rem;color:var(--inchiostro-soft);margin-top:.9rem;padding-left:.8rem;border-left:2px solid var(--linea)}
+
+.barra{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem;align-items:center}
+.barra input{font-family:var(--sans);font-size:14px;padding:.42rem .6rem;width:132px;border:1px solid var(--linea);border-radius:4px;background:#fff;color:var(--inchiostro)}
+.bottone{font-family:var(--sans);font-size:14px;font-weight:500;cursor:pointer;padding:.45rem .8rem;border:1px solid var(--feltro);border-radius:4px;background:#fff;color:var(--feltro)}
+.bottone:hover{background:var(--feltro);color:#fff}
+.bottone.pieno{background:var(--feltro);color:#fff}
+.bottone:disabled{opacity:.45;cursor:default}
+.esito{font-family:var(--sans);font-size:14px;min-height:1.4em;color:var(--inchiostro-soft)}
+.esito.giusto{color:var(--feltro);font-weight:600}
+.esito.sbagliato{color:#A32A2A;font-weight:600}
+.quiz{border:1px solid var(--linea);background:#fff;border-radius:5px;padding:1rem 1.1rem;margin-top:1rem}
+.quiz .mano{font-family:var(--sans);font-size:2.1rem;font-weight:700;letter-spacing:-.02em;line-height:1}
+.quiz .contesto{font-family:var(--sans);font-size:13px;color:var(--inchiostro-soft);margin-bottom:.8rem}
+.quiz .punteggio{font-family:var(--sans);font-size:13px;color:var(--inchiostro-soft);margin-top:.7rem;font-variant-numeric:tabular-nums}
+
+.profondita{display:flex;gap:.4rem;align-items:center;margin:1.4rem 0 2rem;font-family:var(--sans);font-size:14px;flex-wrap:wrap}
+.profondita span{color:var(--inchiostro-soft);margin-right:.3rem}
+.vuoto{border:1px dashed var(--linea);border-radius:5px;padding:1.5rem;font-family:var(--sans);font-size:14.5px;color:var(--inchiostro-soft);max-width:640px}
+.vuoto b{display:block;font-weight:600;color:var(--inchiostro);margin-bottom:.3rem}
+
+#cerca{font-family:var(--sans);font-size:15px;padding:.55rem .7rem;width:100%;max-width:340px;border:1px solid var(--linea);border-radius:4px;background:#fff;color:var(--inchiostro);margin-bottom:1.4rem}
+.voce{border-bottom:1px solid var(--linea);padding:.85rem 0}
+.voce .nomi{font-family:var(--sans);font-weight:600;font-size:1.02rem;cursor:pointer;background:none;border:0;padding:0;color:var(--inchiostro);text-align:left}
+.voce .nomi:hover{color:var(--feltro)}
+.voce .nomi small{font-weight:400;color:var(--inchiostro-soft)}
+.voce p{margin:.15rem 0 0;color:var(--inchiostro-soft);font-size:.95rem}
+
+#apriMenu{display:none}
+@media (max-width:880px){
+  body{font-size:16.5px}
+  .wrap{display:block}
+  nav{position:fixed;top:0;left:0;bottom:0;width:84vw;z-index:90;background:var(--carta);transform:translateX(-100%);transition:transform .22s ease;height:100%}
+  nav.on{transform:none}
+  main{padding:4.2rem 1.15rem 5rem;max-width:none}
+  article{max-width:none}
+  #apriMenu{display:flex;align-items:center;position:fixed;top:0;left:0;right:0;height:3.2rem;z-index:85;background:var(--carta);border:0;border-bottom:1px solid var(--linea);font-family:var(--sans);font-weight:600;font-size:15px;padding:0 1.15rem;cursor:pointer;color:var(--inchiostro);width:100%}
+  #pannello{top:auto;height:82vh;width:100%;max-width:100%;border-radius:12px 12px 0 0;transform:translateY(100%);border-left:0;border-top:1px solid var(--linea)}
+  #pannello.on{transform:none}
+  .tabella{max-width:100%}
+  .cella{font-size:clamp(7px,2.2vw,11px)}
+  #suggerimento{display:none}
+}
+</style>
+</head>
+<body>
+<button id="apriMenu">☰ Indice</button>
+<div class="wrap">
+  <nav id="nav">
+    <div class="marchio">Manuale<span>Spin &amp; Go</span></div>
+    <div class="sotto">3 giocatori · bozza v0.2</div>
+    <div class="lingua">Termini <button data-l="it" class="on">IT</button><button data-l="en">EN</button></div>
+    <div id="indice"></div>
+  </nav>
+  <main><article id="pagina"></article></main>
+</div>
+<div id="suggerimento"></div>
+<div id="velo"></div>
+<aside id="pannello" role="dialog" aria-modal="true"><button class="chiudi">×</button><div id="pannelloCorpo"></div></aside>
+
+<script>
+/* ╔═══ BLOCCO 1 — GLOSSARIO ══════════════════════════════════╗
+   it / en = le due forme principali. alias = tutto ciò che va
+   riconosciuto nel testo, in entrambe le lingue.
+   ╚═══════════════════════════════════════════════════════════╝ */
+const GLOSSARIO = [
+{id:"spin-go",it:"Spin & Go",en:"Spin & Go",cat:"Formato",
+ alias:["spin & go","spin&go","spin and go","spin go","spin"],
+ breve:"Sit &amp; go iper-turbo da tre giocatori in cui il montepremi viene sorteggiato a inizio partita.",
+ lungo:"<p>Torneo lampo con stack corti e livelli velocissimi. Prima della prima mano una ruota sorteggia un moltiplicatore che determina il montepremi: quasi sempre due o tre volte il buy-in, molto di rado migliaia di volte.</p><p>Si comincia in tre e si finisce testa a testa, quindi servono entrambe le competenze. E una fetta importante del rendimento arriva da moltiplicatori rari, il che rende la varianza enorme.</p>",
+ vedi:["moltiplicatore","varianza","heads-up"]},
+
+{id:"moltiplicatore",it:"Moltiplicatore",en:"Multiplier",cat:"Formato",
+ alias:["moltiplicatore","moltiplicatori","multiplier","spinner"],
+ breve:"Il numero sorteggiato a inizio partita che stabilisce il montepremi, lo stack e la durata dei livelli.",
+ lungo:"<p>Non decide solo quanto si vince. Dal novembre 2024 su PokerStars determina anche le fiches di partenza e la velocità dei bui: x2 e x3 partono con 15 bui, dal x4 con 20, dal x10 con 25.</p><p>Cambia anche la struttura dei premi: fino al x3 vince tutto il primo, dal x10 in su pagano tre posizioni.</p>",
+ vedi:["spin-go","stack-effettivo","icm"]},
+
+{id:"varianza",it:"Varianza",en:"Variance",cat:"Mentale",
+ alias:["varianza","variance","swing","swings"],
+ breve:"L'oscillazione dei risultati intorno al valore vero: quanto il breve periodo può mentire.",
+ lungo:"<p>Su questo formato è estrema, perché una parte del guadagno atteso arriva da moltiplicatori che escono una volta ogni migliaia di partite. Fino a che quelli non escono, un giocatore vincente sembra perdente.</p><p>Conseguenza pratica: poche centinaia di partite non dicono nulla sul tuo livello. Nemmeno mille. Giudicare la propria bravura dal saldo del mese è il modo più rapido per cambiare strategia nel momento sbagliato.</p>",
+ vedi:["bankroll","valore-atteso"]},
+
+{id:"bankroll",it:"Bankroll",en:"Bankroll",cat:"Mentale",
+ alias:["bankroll","cassa di gioco"],
+ breve:"I soldi destinati esclusivamente al gioco, separati da tutto il resto.",
+ lungo:"<p>La regola di gestione serve a sopravvivere alla varianza, non a moltiplicare i soldi. Su un formato con oscillazioni così ampie servono molte più iscrizioni di riserva rispetto a un torneo normale.</p><p>Un bankroll troppo piccolo non ti fa perdere per sfortuna: ti fa giocare male, perché ogni mano pesa troppo.</p>",
+ vedi:["varianza"]},
+
+{id:"bottone",it:"Bottone",en:"Button",cat:"Posizioni",
+ alias:["bottone","button","btn","da bottone","dal bottone"],
+ breve:"La posizione che agisce per ultima dopo il flop. In tre giocatori è la prima a parlare prima del flop.",
+ lungo:"<p>La posizione migliore del tavolo: dopo il flop decide avendo già visto cosa fanno gli altri, e al tavolo da tre è l'unica senza buio da versare.</p><p>Questo vantaggio giustifica un range di apertura molto largo: mani che altrove butteresti qui rendono, perché la posizione ti ripaga nelle strade successive.</p>",
+ vedi:["posizione","range-apertura"]},
+
+{id:"small-blind",it:"Piccolo buio",en:"Small blind",cat:"Posizioni",
+ alias:["piccolo buio","small blind","sb","piccolo bui"],
+ breve:"Versa il buio piccolo. In tre giocatori parla per secondo prima del flop e per primo dopo.",
+ lungo:"<p>La posizione più scomoda: mette soldi al buio e dopo il flop parla per prima. Ha però già investito metà buio grande, quindi il prezzo per continuare è più basso.</p><p>È l'unica posizione in cui, nelle tabelle di questa serie, compare anche il limp come scelta deliberata.</p>",
+ vedi:["big-blind","limp","posizione"]},
+
+{id:"big-blind",it:"Grande buio",en:"Big blind",cat:"Posizioni",
+ alias:["grande buio","big blind","bb","grandi bui"],
+ breve:"Versa il buio grande. È l'ultimo a parlare prima del flop e ha le quote migliori per difendersi.",
+ lungo:"<p>Ha già un buio intero nel piatto. Se il bottone apre a due bui, per vedere ne aggiunge uno e ne può vincere due e mezzo: quote che permettono di difendersi con mani molto più deboli di quelle con cui apriresti.</p><p>Attenzione all'ambiguità: grande buio è sia la posizione sia l'unità di misura degli stack.</p>",
+ vedi:["difesa-bb","quote-del-piatto"]},
+
+{id:"heads-up",it:"Testa a testa",en:"Heads-up",cat:"Posizioni",
+ alias:["testa a testa","heads-up","heads up","hu"],
+ breve:"Il gioco a due, quando uno dei tre è stato eliminato.",
+ lungo:"<p>Ogni Spin &amp; Go che non finisce con un'eliminazione doppia passa da qui, quindi è metà del formato e non un dettaglio finale.</p><p>A due i range si allargano enormemente e con stack corti si scivola quasi subito nel push o fold.</p>",
+ vedi:["push-fold","spin-go"]},
+
+{id:"posizione",it:"Posizione",en:"Position",cat:"Concetti",
+ alias:["posizione","posizionale","in posizione","fuori posizione","position","out of position","oop","ip"],
+ breve:"Chi agisce dopo l'avversario è in posizione, e decide avendo più informazioni.",
+ lungo:"<p>Parlare per ultimi permette di vedere l'azione prima di scegliere, di controllare la dimensione del piatto e di bluffare sapendo che nessuno può più reagire.</p><p>Quasi tutte le differenze tra i range delle varie posizioni nascono da qui.</p>",
+ vedi:["bottone","big-blind"]},
+
+{id:"range",it:"Range",en:"Range",cat:"Concetti",
+ alias:["range","ventaglio di mani"],
+ breve:"L'insieme di tutte le mani con cui compi una certa azione in una certa situazione.",
+ lungo:"<p>Non giochi una mano alla volta, giochi un insieme. Il range è la lista completa delle mani con cui apriresti, pagheresti o passeresti in quella situazione, e si rappresenta con la griglia delle 169 combinazioni.</p><p>Ragionare per range invece che per mani singole è il salto mentale più importante del poker moderno.</p>",
+ vedi:["range-apertura","combo","cappato"]},
+
+{id:"range-apertura",it:"Range di apertura",en:"Opening range",cat:"Preflop",
+ alias:["range di apertura","range d'apertura","apertura","opening range","open","raise first in","rfi"],
+ breve:"Le mani con cui fai il primo rilancio quando il piatto non è ancora stato aperto.",
+ lungo:"<p>Cambia con la posizione e con la profondità degli stack. Da bottone al tavolo da tre è molto largo, perché hai due soli avversari e parli per ultimo dopo il flop.</p><p>Largo non vuol dire qualunque cosa: le mani devono conservare potenziale sufficiente a giocare un flop, altrimenti apri e poi abbandoni.</p>",
+ vedi:["range","min-rilancio","steal"]},
+
+{id:"min-rilancio",it:"Min-rilancio",en:"Min-raise",cat:"Preflop",
+ alias:["min-rilancio","minirilancio","mini rilancio","min raise","min-raise","mini-raise","minraise"],
+ breve:"Il rilancio più piccolo consentito: il doppio del buio grande.",
+ lungo:"<p>Con stack corti è la dimensione di apertura standard. Rischia poco per prendersi i bui e tiene il piatto abbastanza piccolo da lasciare spazio a tre puntate, una per strada.</p><p>Nella fase iniziale si apre sempre con questa misura, con qualsiasi mano. Cambiare dimensione a seconda della forza regalerebbe informazione gratis.</p>",
+ vedi:["range-apertura","stack-effettivo"]},
+
+{id:"shove",it:"All in",en:"Shove",cat:"Preflop",
+ alias:["all in","all-in","shove","push","pushare","spingere","shovare"],
+ breve:"Puntare tutto lo stack in una volta sola.",
+ lungo:"<p>Con stack corti diventa l'azione principale: elimina ogni decisione successiva e massimizza la possibilità che l'avversario passi.</p><p>Chi riceve un all in non deve chiedersi se ha una bella mano, ma se ha abbastanza equity rispetto a quanto paga per quanto può vincere.</p>",
+ vedi:["equity","quote-del-piatto","push-fold","fold-equity"]},
+
+{id:"push-fold",it:"Push o fold",en:"Push/fold",cat:"Preflop",
+ alias:["push o fold","push/fold","push-fold","spingi o passa"],
+ breve:"Strategia con stack molto corti: ogni mano è solo o all in o passo.",
+ lungo:"<p>Sotto una certa profondità rilanciare piccolo non ha senso, perché impegna già quasi tutte le fiches. Restano due sole azioni, e le scelte si ricavano da tabelle calcolate matematicamente.</p><p>È lo scenario dominante negli Spin &amp; Go a 15 bui, cioè nella maggioranza delle partite.</p>",
+ vedi:["shove","stack-effettivo","nash"]},
+
+{id:"nash",it:"Equilibrio di Nash",en:"Nash equilibrium",cat:"Matematica",
+ alias:["equilibrio di nash","nash equilibrium","nash","tabelle di nash"],
+ breve:"La coppia di strategie in cui nessuno dei due può guadagnare cambiando idea da solo.",
+ lungo:"<p>Per le situazioni di push o fold con due giocatori esiste una soluzione calcolabile esattamente, ed è da lì che vengono le tabelle di spinta e risposta usate come riferimento.</p><p>Non è la strategia che guadagna di più: è quella che non si può sfruttare. Contro avversari che sbagliano si guadagna di più deviando.</p>",
+ vedi:["push-fold","gto"]},
+
+{id:"gto",it:"Gioco imperfettibile",en:"GTO",cat:"Matematica",
+ alias:["gto","game theory optimal","gioco imperfettibile","gioco teoricamente ottimale"],
+ breve:"La strategia che nessun avversario può sfruttare, anche conoscendola per intero.",
+ lungo:"<p>Non punta a battere l'avversario specifico, punta a non poter essere battuta. È il pavimento sotto il quale non si scende.</p><p>Il contrario è il gioco sfruttativo: deviare apposta per punire un errore ricorrente dell'avversario, accettando di diventare a propria volta sfruttabile.</p>",
+ vedi:["nash","sfruttativo"]},
+
+{id:"sfruttativo",it:"Gioco sfruttativo",en:"Exploitative play",cat:"Concetti",
+ alias:["gioco sfruttativo","sfruttativo","exploitative","exploit","sfruttare"],
+ breve:"Deviare dalla strategia base per punire un errore specifico dell'avversario.",
+ lungo:"<p>Se uno passa troppo, rubi di più. Se non passa mai, smetti di bluffare. Ogni deviazione ti espone a sua volta, quindi va fatta su prove, non su sensazioni.</p><p>Negli Spin &amp; Go a basso buy-in rende molto, perché gli errori degli avversari sono grossi e ripetuti.</p>",
+ vedi:["gto","steal"]},
+
+{id:"limp",it:"Limp",en:"Limp",cat:"Preflop",
+ alias:["limp","limpare","limpa","limper","limpers","open limp","limpando"],
+ breve:"Entrare nel piatto pagando solo il buio grande, senza rilanciare.",
+ lungo:"<p>Da bottone è quasi sempre un errore: rinuncia all'iniziativa e alla possibilità di vincere subito. Chi limpa di solito ha una mano mediocre che non vuole buttare.</p><p>Dal piccolo buio invece può essere deliberato, e nelle tabelle di questa serie convive con il rilancio: alcune mani forti limpano apposta per poi spingere.</p>",
+ vedi:["isolamento","trappola","steal"]},
+
+{id:"isolamento",it:"Isolamento",en:"Isolation raise",cat:"Preflop",
+ alias:["isolamento","isolare","iso","iso raise","isolation","rilancio di isolamento"],
+ breve:"Rilanciare sopra un limp per restare soli contro chi è entrato debole.",
+ lungo:"<p>L'obiettivo doppio è togliere di mezzo gli altri e giocare in posizione di forza contro un range che ha già dichiarato di non essere granché.</p><p>La misura tipica contro un limp è più grande di un'apertura normale, perché nel piatto ci sono già più fiches da proteggere.</p>",
+ vedi:["limp","dead-money"]},
+
+{id:"trappola",it:"Trappola",en:"Trapping",cat:"Concetti",
+ alias:["trappola","trappare","trapping","slowplay","slowplayare","rallentare"],
+ breve:"Nascondere una mano fortissima giocandola piano, per far parlare l'avversario.",
+ lungo:"<p>Funziona solo quando c'è abbastanza stack dietro da poter recuperare le puntate perse. Con 25 bui e tre strade disponibili, di solito conviene invece costruire il piatto subito.</p><p>Va comunque previsto che qualcuno lo faccia: le tabelle contro i limp tengono conto della rara possibilità che un limp nasconda un mostro.</p>",
+ vedi:["limp","cappato"]},
+
+{id:"tre-bet",it:"3-bet",en:"3-bet",cat:"Preflop",
+ alias:["3-bet","3bet","tre bet","three bet","terzo rilancio","rilancio sopra"],
+ breve:"Il terzo rilancio della mano, cioè il rilancio sopra un rilancio.",
+ lungo:"<p>I bui contano come prima puntata, quindi l'apertura è la seconda e il rilancio sopra è la terza. Con stack corti è quasi sempre un all in.</p><p>Dopo una 3-bet il piatto è già grande rispetto agli stack: resta spazio per una sola puntata, non per tre. Questo cambia tutto il gioco successivo.</p>",
+ vedi:["shove","stack-effettivo","difesa-bb"]},
+
+{id:"steal",it:"Furto dei bui",en:"Steal",cat:"Preflop",
+ alias:["furto dei bui","rubare i bui","steal","stealing","rubare"],
+ breve:"Aprire con una mano mediocre puntando soprattutto a portare a casa i bui subito.",
+ lungo:"<p>Con stack corti i bui valgono molto rispetto a quello che rischi per prenderli, quindi rubare è una fonte di guadagno costante. Funziona finché gli avversari passano abbastanza.</p><p>Contro chi difende moltissimo o risponde spesso con l'all in, il range di furto va stretto.</p>",
+ vedi:["range-apertura","fold-equity","sfruttativo"]},
+
+{id:"dead-money",it:"Soldi morti",en:"Dead money",cat:"Concetti",
+ alias:["soldi morti","dead money","piatto morto"],
+ breve:"Le fiches già nel piatto che nessuno sta più difendendo.",
+ lungo:"<p>Bui, limp e puntate abbandonate: sono soldi che si possono raccogliere senza dover vincere uno scontro. In un formato veloce ogni raccolta pesa.</p><p>Più soldi morti ci sono, più conviene attaccare anche con mani mediocri.</p>",
+ vedi:["steal","isolamento","fold-equity"]},
+
+{id:"stack-effettivo",it:"Stack effettivo",en:"Effective stack",cat:"Concetti",
+ alias:["stack effettivo","stack effettivi","effective stack","stack"],
+ breve:"Il più piccolo tra i due stack in gioco: è il massimo che puoi davvero vincere o perdere in quella mano.",
+ lungo:"<p>Se tu hai 50 bui e l'avversario 12, in quella mano se ne giocano 12. Tutte le decisioni vanno prese guardando questo numero, non il tuo.</p><p>È la variabile che determina la strategia più di qualsiasi altra: la stessa mano vale cose diversissime a 25 bui e a 15.</p>",
+ vedi:["push-fold","min-rilancio","moltiplicatore"]},
+
+{id:"early-stage",it:"Fase iniziale",en:"Early stage",cat:"Concetti",
+ alias:["fase iniziale","early stage","early-stage","primi livelli"],
+ breve:"I primi livelli, quando gli stack sono ancora abbastanza profondi da poter giocare dopo il flop.",
+ lungo:"<p>È la finestra in cui un giocatore preparato guadagna di più, perché ci sono ancora decisioni vere su tre strade e un errore non è fatale.</p><p>Con 15 bui questa finestra è quasi inesistente: si passa quasi subito al push o fold.</p>",
+ vedi:["push-fold","stack-effettivo"]},
+
+{id:"c-bet",it:"Puntata di continuità",en:"C-bet",cat:"Postflop",
+ alias:["puntata di continuità","c-bet","cbet","c bet","continuation bet","continuity bet"],
+ breve:"La puntata al flop di chi aveva rilanciato prima del flop.",
+ lungo:"<p>Chi ha aperto ha raccontato una mano forte e sul flop continua la storia. Funziona perché l'avversario manca il flop circa due volte su tre.</p><p>Non va fatta sempre: la frequenza dipende da quanto la texture favorisce il tuo range. Puntare a tappeto sui flop sbagliati è un modo veloce per bruciare fiches.</p>",
+ vedi:["texture","vantaggio-di-range","flop"]},
+
+{id:"texture",it:"Texture",en:"Board texture",cat:"Postflop",
+ alias:["texture","tessitura","struttura del board","board texture","asciutto","bagnato","dry","wet"],
+ breve:"Com'è fatto il flop: carte alte o basse, collegate o slegate, dello stesso seme o no.",
+ lungo:"<p>Si distingue tra flop asciutti, con carte lontane e nessun progetto evidente, e flop bagnati, pieni di scale e colori possibili.</p><p>Sugli asciutti chi ha l'iniziativa punta spesso e piccolo. Sui bagnati l'avversario ha molte più mani che possono continuare, quindi si punta meno spesso e più grosso.</p>",
+ vedi:["c-bet","vantaggio-di-range","board"]},
+
+{id:"board",it:"Board",en:"Board",cat:"Postflop",
+ alias:["board","carte comuni","tavolo"],
+ breve:"Le carte comuni scoperte al centro: flop, turn e river.",
+ lungo:"<p>Appartengono a entrambi i giocatori, quindi ogni carta che esce cambia contemporaneamente la forza di tutte e due le mani e di tutti e due i range.</p>",
+ vedi:["flop","texture"]},
+
+{id:"vantaggio-di-range",it:"Vantaggio di range",en:"Range advantage",cat:"Postflop",
+ alias:["vantaggio di range","vantaggio del range","range advantage","equity advantage"],
+ breve:"Quando su un certo board il tuo insieme di mani è complessivamente più forte di quello dell'avversario.",
+ lungo:"<p>Non riguarda la mano che hai, ma tutte quelle che potresti avere. Se hai aperto da bottone e il flop è asso re sette, il tuo range contiene molti più assi e re di quello di chi ha solo pagato.</p><p>Su un flop nove otto sei il vantaggio evapora o passa dall'altra parte, perché quelle carte si incastrano meglio con il range di chi ha difeso.</p>",
+ vedi:["texture","c-bet","cappato"]},
+
+{id:"cappato",it:"Range cappato",en:"Capped range",cat:"Concetti",
+ alias:["cappato","cappate","capped","range cappato","capped range"],
+ breve:"Un range senza le mani più forti, perché con quelle avresti giocato diversamente.",
+ lungo:"<p>Se con i mostri avresti rilanciato, allora quando ti limiti a pagare il tuo range ha un tetto: coppie medie e progetti, non fortissime.</p><p>Riconoscere un range cappato autorizza ad applicare pressione, perché l'avversario non ha quasi mai di che pagare fino in fondo.</p>",
+ vedi:["range","vantaggio-di-range","trappola"]},
+
+{id:"equity",it:"Equity",en:"Equity",cat:"Matematica",
+ alias:["equity","quota di piatto"],
+ breve:"La quota del piatto che ti spetta in media, cioè quanto spesso vinci lo scontro sul lungo periodo.",
+ lungo:"<p>Se vinci il 40% delle volte contro il range avversario, la tua equity in un piatto da 1000 è 400. Non è quello che vinci stavolta, è la media su moltissime ripetizioni.</p><p>Si confronta sempre con quanto stai pagando: mettere 460 per vincerne 1010 richiede circa il 45%, non il 50%.</p>",
+ vedi:["quote-del-piatto","valore-atteso"]},
+
+{id:"quote-del-piatto",it:"Quote del piatto",en:"Pot odds",cat:"Matematica",
+ alias:["quote del piatto","pot odds","quote","odds"],
+ breve:"Il rapporto tra quanto devi pagare e quanto puoi vincere: dice l'equity minima che ti serve.",
+ lungo:"<p>Si divide quello che metti per il totale del piatto dopo averlo messo. Pagare 100 in un piatto che diventa 400 richiede il 25%.</p><p>È il motivo per cui dal grande buio ci si difende con mani deboli: hai già dentro un buio, quindi il prezzo per continuare è basso.</p>",
+ vedi:["equity","difesa-bb"]},
+
+{id:"valore-atteso",it:"Valore atteso",en:"Expected value",cat:"Matematica",
+ alias:["valore atteso","ev","expected value"],
+ breve:"Quanto rende in media una decisione, pesando ogni esito per la sua probabilità.",
+ lungo:"<p>Si sommano gli esiti possibili moltiplicati per quanto spesso accadono. Se una mossa vince 70 nel 74% dei casi e perde 177 nel 26%, il valore atteso è 70×0,74 meno 177×0,26.</p><p>Giocare bene significa scegliere ogni volta l'azione con il valore atteso più alto, indipendentemente da come è andata l'ultima volta.</p>",
+ vedi:["equity","fold-equity","varianza"]},
+
+{id:"fold-equity",it:"Equity di piega",en:"Fold equity",cat:"Matematica",
+ alias:["equity di piega","fold equity","fold-equity"],
+ breve:"Il valore che ricavi dalle volte in cui l'avversario passa e ti lascia il piatto.",
+ lungo:"<p>Quando spingi vinci in due modi: perché lui passa, o perché paga e tu vinci lo scontro. Il primo è quasi sempre la parte più grossa del guadagno con stack corti.</p><p>Contro chi non passa mai la fold equity è zero, e restano solo le carte.</p>",
+ vedi:["shove","valore-atteso","steal"]},
+
+{id:"blocker",it:"Blocker",en:"Blocker",cat:"Concetti",
+ alias:["blocker","blockers","bloccante","carta bloccante"],
+ breve:"Una carta in tua mano che riduce il numero di mani forti che l'avversario può avere.",
+ lungo:"<p>Se hai un asso, le combinazioni di assi disponibili per lui scendono. Con un re in mano è meno probabile che lui abbia KK o AK.</p><p>Conta soprattutto quando spingi come bluff: un blocker rende meno probabile che ti paghino.</p>",
+ vedi:["combo","shove"]},
+
+{id:"combo",it:"Combinazione",en:"Combo",cat:"Concetti",
+ alias:["combinazione","combinazioni","combo","combos"],
+ breve:"Ogni singola versione di una mano contando i semi: 6 per le coppie, 4 se dello stesso seme, 12 altrimenti.",
+ lungo:"<p>Le mani sono 169 ignorando i semi, 1326 contandoli. Serve per misurare quanto è largo un range davvero: un range fatto solo di coppie occupa molte caselle ma pesa poco.</p><p>Da qui vengono tutte le percentuali accanto alle tabelle.</p>",
+ vedi:["range","griglia","blocker"]},
+
+{id:"griglia",it:"Griglia dei range",en:"Range grid",cat:"Concetti",
+ alias:["griglia dei range","griglia","matrice","range grid","hand matrix"],
+ breve:"La tabella 13×13 che rappresenta tutte le 169 mani di partenza.",
+ lungo:"<p>Le coppie sulla diagonale, sopra le mani dello stesso seme, sotto quelle di semi diversi. Gli assi in alto a sinistra, le carte basse in basso a destra.</p><p>Ogni casella colorata secondo l'azione prevista: si legge tutta la strategia in un colpo d'occhio.</p>",
+ vedi:["range","combo"]},
+
+{id:"suited",it:"Stesso seme",en:"Suited",cat:"Concetti",
+ alias:["stesso seme","suited","suitate","di cuori","offsuit","semi diversi","spaiate"],
+ breve:"Due carte dello stesso seme (suited) o di semi diversi (offsuit).",
+ lungo:"<p>Nella notazione si indica con una s o una o finale: AKs e AKo. Le coppie non hanno suffisso.</p><p>Lo stesso seme vale parecchio con stack corti: aggiunge la possibilità di colore e alza l'equity contro quasi tutto, che è esattamente ciò che serve quando si finisce spesso all in.</p>",
+ vedi:["combo","connettori"]},
+
+{id:"connettori",it:"Connettori",en:"Connectors",cat:"Concetti",
+ alias:["connettori","connettore","suited connector","suited connectors","connectors"],
+ breve:"Due carte consecutive, spesso dello stesso seme: 76s, 98s.",
+ lungo:"<p>Valgono poco in valore assoluto ma tanto in potenziale, perché fanno scale e colori. Funzionano bene proprio contro i range larghi e deboli.</p><p>È il motivo per cui 76s può spingere contro un limp: quando lo pagano, raramente è dominato senza speranza.</p>",
+ vedi:["suited","shove","limp"]},
+
+{id:"difesa-bb",it:"Difesa del grande buio",en:"Big blind defence",cat:"Preflop",
+ alias:["difesa del grande buio","difesa del big blind","difendere il big blind","bb defence","bb defense","difesa"],
+ breve:"Le mani con cui continui dal grande buio di fronte a un'apertura, invece di passare.",
+ lungo:"<p>Grazie alle quote si difende molto più largo di quanto si aprirebbe. Con stack corti le opzioni sono tre e non due: passare, pagare, o spingere.</p><p>Difendere troppo poco rende il furto dei bui automaticamente redditizio per l'avversario. Difendere troppo ti fa giocare troppi piatti fuori posizione.</p>",
+ vedi:["big-blind","quote-del-piatto","tre-bet"]},
+
+{id:"flop",it:"Flop",en:"Flop",cat:"Postflop",
+ alias:["flop"],
+ breve:"Le prime tre carte comuni, scoperte insieme dopo il primo giro di puntate.",
+ lungo:"<p>È il momento in cui la mano prende forma: hai visto cinque delle sette carte finali, quindi la maggior parte dell'informazione è già sul tavolo.</p>",
+ vedi:["texture","c-bet","board"]},
+
+{id:"icm",it:"ICM",en:"ICM",cat:"Matematica",
+ alias:["icm","independent chip model"],
+ breve:"Il modello che traduce le fiches in soldi quando la struttura dei premi paga più posizioni.",
+ lungo:"<p>Nei tornei le fiches non valgono linearmente: raddoppiare lo stack non raddoppia il guadagno atteso. L'ICM stima quanto vale in denaro il tuo stack date la struttura e gli stack degli altri.</p><p>Conta poco quando vince tutto il primo, e parecchio sui moltiplicatori alti dove pagano tre posizioni.</p>",
+ vedi:["moltiplicatore","spin-go"]}
+];
+
+/* ╔═══ BLOCCO 2 — TABELLE DEI RANGE ══════════════════════════╗
+   Notazione: AA · AKs · AKo · 22+ · A2s+ · 22-44 · K4s-KJs · *
+   Prima azione elencata vince. Il fold si scrive con *
+   ╚═══════════════════════════════════════════════════════════╝ */
+const C={verde:"#146D4D",rosso:"#8A171C",blu:"#1173AD",oliva:"#57521F",viola:"#462F7E",grigio:"#C9CCC4"};
+
+const RANGES=[
+{id:"btn-apertura",tavolo:3,bb:25,
+ titolo:{it:"Apertura da bottone",en:"Button opening range"},
+ meta:{it:"Piatto non aperto · min-rilancio a 2 bui",en:"Unopened pot · min-raise to 2bb"},
+ azioni:[
+  {k:"RC",c:C.verde,n:{it:"Apro e pago l'all in",en:"Min-raise / call"},m:"55+, A9s+, KQs, ATo+"},
+  {k:"RF",c:C.rosso,n:{it:"Apro e passo all'all in",en:"Min-raise / fold"},m:"22-44, A2s-A8s, K4s-KJs, Q5s+, J6s+, T6s+, 96s+, 86s+, 75s+, 65s, 54s, A4o-A9o, K9o+, Q9o+, J9o+, T9o, 98o"},
+  {k:"F",c:C.grigio,n:{it:"Passo",en:"Fold"},m:"*"}],
+ nota:{it:"Si apre sempre della stessa misura, con qualsiasi mano. La parte verde è il 25,8% dell'apertura: da lì esce il 74% di fold contro un all in.",en:""}},
+
+{id:"sb-apertura",tavolo:3,bb:25,
+ titolo:{it:"Apertura da piccolo buio",en:"Small blind opening range"},
+ meta:{it:"Bottone ha passato · rilancio 2,5 bui oppure limp",en:"Folded to SB · 2.5x raise or limp"},
+ azioni:[
+  {k:"RC",c:C.verde,n:{it:"Rilancio 2,5x e continuo",en:"2.5x raise / continue"},m:"QQ+, 66-99, A9s+, KQs, ATo-AJo"},
+  {k:"RF",c:C.rosso,n:{it:"Rilancio 2,5x e passo",en:"2.5x raise / fold"},m:"K2s-K7s, Q2s-Q6s, J6s, T6s, 96s, 86s, 75s+, 64s+, 53s+, 43s, A2o-A6o, 87o, 76o, 65o"},
+  {k:"LS",c:C.viola,n:{it:"Limp e all in",en:"Limp / shove"},m:"TT-JJ, 22-55, A2s-A5s, AQo+"},
+  {k:"LC",c:C.oliva,n:{it:"Limp e pago",en:"Limp / call"},m:"A6s-A8s, K8s-KJs, Q7s+, J7s+, T7s+, 97s+, 87s, A7o-A9o, K9o+, Q9o+, J9o+, T9o, 98o"},
+  {k:"LF",c:C.blu,n:{it:"Limp e passo",en:"Limp / fold"},m:"J2s-J5s, T4s-T5s, 94s-95s, 84s-85s, 74s, 63s, 52s, 42s, 32s, K5o-K8o, Q7o-Q8o, J7o-J8o, T7o-T8o, 97o, 86o"},
+  {k:"F",c:C.grigio,n:{it:"Passo",en:"Fold"},m:"*"}],
+ nota:{it:"Qui compare il limp, che da bottone non esisteva. Le mani forti si dividono: AA KK QQ e 99-66 rilanciano, JJ TT e le coppie basse limpano per poi spingere.",en:""}},
+
+{id:"bb-vs-btn",tavolo:3,bb:25,
+ titolo:{it:"Difesa del grande buio contro il bottone",en:"BB defence vs button"},
+ meta:{it:"Il bottone ha aperto con un min-rilancio",en:"Facing a button min-raise"},
+ azioni:[
+  {k:"3C",c:C.verde,n:{it:"Rilancio 2,5x e pago",en:"2.5x 3-bet / call"},m:"QQ+"},
+  {k:"3F",c:C.rosso,n:{it:"Rilancio 2,5x e passo",en:"2.5x 3-bet / fold"},m:"K5o-K6o"},
+  {k:"AI",c:C.blu,n:{it:"All in",en:"All-in 3-bet"},m:"22-JJ, A5s+, KQs, QTs+, J9s+, T9s, 98s, 87s, 76s, A6o+"},
+  {k:"CA",c:C.oliva,n:{it:"Pago",en:"Call"},m:"A2s-A4s, K2s-KJs, Q2s-Q9s, J2s-J8s, T2s-T8s, 92s-97s, 82s-86s, 72s-75s, 62s+, 52s+, 42s+, 32s, A2o-A5o, K7o+, Q7o+, J7o+, T7o+, 97o+, 86o+, 75o+, 64o+, 54o"},
+  {k:"F",c:C.grigio,n:{it:"Passo",en:"Fold"},m:"*"}],
+ nota:{it:"Il rilancio piccolo esiste quasi solo come bluff ed è composto da due sole mani, K5o e K6o. Servono a impedire che rilanciare piccolo voglia dire sempre mano fortissima.",en:""}},
+
+{id:"bb-vs-sb",tavolo:3,bb:25,
+ titolo:{it:"Difesa del grande buio contro il piccolo buio",en:"BB defence vs small blind"},
+ meta:{it:"Il piccolo buio ha aperto con un rilancio",en:"Facing a small blind raise"},
+ azioni:[
+  {k:"3C",c:C.verde,n:{it:"Rilancio 2,5x e pago",en:"2.5x 3-bet / call"},m:"TT+, ATs+"},
+  {k:"3F",c:C.rosso,n:{it:"Rilancio 2,5x e passo",en:"2.5x 3-bet / fold"},m:"K2o-K3o, Q3o"},
+  {k:"AI",c:C.blu,n:{it:"All in",en:"All-in 3-bet"},m:"22-99, A8o+"},
+  {k:"CA",c:C.oliva,n:{it:"Pago",en:"Call"},m:"A2s-A9s, K2s+, Q2s+, J2s+, T2s+, 92s+, 82s+, 72s+, 62s+, 52s+, 42s+, 32s, A2o-A7o, K4o+, Q4o+, J7o+, T7o+, 97o+, 86o+, 75o+, 64o+, 54o"},
+  {k:"F",c:C.grigio,n:{it:"Passo",en:"Fold"},m:"*"}],
+ nota:{it:"Si difende il 72,9%, contro il 66,5% di quando apre il bottone. La differenza è tutta nel pagare: qui resti in gioco con ogni mano dello stesso seme, nessuna esclusa.",en:""}},
+
+{id:"bb-vs-limp",tavolo:3,bb:25,
+ titolo:{it:"Grande buio contro il limp del bottone",en:"BB vs button limp"},
+ meta:{it:"Il bottone ha solo pagato · isolamento a 4 bui",en:"Button limped · 4bb isolation"},
+ azioni:[
+  {k:"IC",c:C.verde,n:{it:"Isolo a 4 bui e pago",en:"Iso 4bb / call"},m:"TT+, A9s+, KQs, AQo+"},
+  {k:"IF",c:C.rosso,n:{it:"Isolo a 4 bui e passo",en:"Iso 4bb / fold"},m:"K9o+, QTo+, JTo"},
+  {k:"AI",c:C.blu,n:{it:"All in",en:"Raise all-in"},m:"22-99, A2s-A8s, 98s, 87s, 76s, 65s, 54s, A2o-AJo"},
+  {k:"CK",c:C.oliva,n:{it:"Check",en:"Check"},m:"*"}],
+ nota:{it:"Qui non esiste il fold: sei già nel piatto, quindi l'alternativa all'attacco è vedere il flop gratis. Il 16,3% di all in è la punizione per chi limpa con stack corti.",en:""}}
+];
+
+/* ╔═══ BLOCCO 3 — LEZIONI ════════════════════════════════════╗
+   ## titolo · **grassetto** · - elenco · > citazione
+   [[range:id]] inserisce una tabella
+   ╚═══════════════════════════════════════════════════════════╝ */
+const LEZIONI=[
+{id:"introduzione",capitolo:"Fondamenta",occhiello:"Lezione 0",bb:null,tavolo:3,
+ titolo:"Che cos'è davvero uno Spin & Go",
+ sommario:"Come funziona il formato, perché la ruota decide più di quanto sembri, e cosa aspettarsi onestamente dai risultati.",
+ testo:`
+Tre giocatori, un tavolo, pochi minuti. Ti iscrivi, il sistema aspetta di raccogliere tre partecipanti, e prima ancora che venga distribuita una carta una ruota gira e stabilisce il montepremi. Solo a quel punto comincia la partita.
+
+Quella ruota non decide soltanto quanto si vince. Decide anche **con quante fiches si parte e quanto durano i livelli**, e quindi decide che tipo di poker giocherai nei prossimi minuti.
+
+## Le tre partite dentro un formato solo
+
+Dal novembre 2024 la struttura cambia con il moltiplicatore estratto:
+
+- moltiplicatore **x2 e x3**, si parte con **300 fiches**, cioè 15 bui, e i livelli sono brevissimi
+- dal **x4**, si parte con **400 fiches**, cioè 20 bui
+- dal **x10** in su, si parte con **500 fiches**, cioè 25 bui, e i livelli sono più lunghi
+
+Sono tre giochi diversi con lo stesso nome. A 25 bui esiste una vera fase iniziale: puoi aprire piccolo, vedere un flop, costruire un piatto su tre strade. A 15 bui quella fase praticamente non c'è, e dopo poche mani ogni decisione si riduce a spingere tutto o passare.
+
+Conta anche perché la frequenza è squilibrata: i moltiplicatori bassi escono quasi sempre. Quindi la partita che giocherai più spesso è quella dove si ragiona meno e si calcola di più.
+
+> Quasi tutto il materiale di strategia in circolazione, compreso quello da cui nasce questo manuale, è scritto per i 25 bui. È materiale buono, ma si applica alla minoranza delle tue partite. Tienilo a mente ogni volta che leggi una tabella.
+
+## Chi viene pagato
+
+Fino al x3 vince tutto il primo, gli altri due non prendono niente. Dal x10 in su il premio si distribuisce su tre posizioni.
+
+Sembra un dettaglio contabile, non lo è. Quando vince tutto il primo, arrivare secondi vale esattamente quanto arrivare terzi: sopravvivere non ha valore, e le mani vanno giocate per massimizzare la vittoria. Quando pagano tre posizioni, sopravvivere comincia a valere qualcosa, ed è il territorio dell'ICM.
+
+## Si comincia in tre e si finisce in due
+
+Ogni Spin & Go che non finisce con una doppia eliminazione passa dal testa a testa. È metà del formato, non un epilogo. Un giocatore che conosce benissimo il gioco a tre e improvvisa a due sta buttando via buona parte del suo vantaggio.
+
+## La parte scomoda
+
+Va detta subito, perché tutto il resto dipende da questo.
+
+Una fetta consistente del guadagno atteso di questo formato arriva da moltiplicatori che escono una volta ogni migliaia di partite. Significa che per lunghi tratti un giocatore **vincente sembra perdente**, e un giocatore perdente che becca uno spin fortunato sembra un fenomeno.
+
+Poche centinaia di partite non dicono niente sul tuo livello. Nemmeno mille. Il saldo del mese non è una valutazione della tua bravura, è un campione troppo piccolo per dire qualsiasi cosa.
+
+Questo ha due conseguenze pratiche, e sono entrambe scomode:
+
+- **non cambiare strategia in base ai risultati recenti.** È esattamente il modo in cui si abbandona una strategia corretta nel momento peggiore. Si cambia per un ragionamento, non per un saldo.
+- **serve una riserva molto più ampia** di quella che basterebbe in un formato normale, altrimenti non è la sfortuna a batterti, è il fatto che ogni mano pesa troppo e giochi male.
+
+Se una di queste due cose non è in ordine, il resto del manuale serve a poco. Il gioco vale anche denaro vero, e la struttura a lotteria di questo formato lo rende più insidioso di altri sul piano dell'autocontrollo.
+
+## Come è fatto questo manuale
+
+Le lezioni indicano sempre la profondità a cui si riferiscono. Le tabelle dei range sono dati, non immagini: puoi cercarci dentro una mano singola e allenarti a memorizzarle. I termini tecnici sono sottolineati e cliccabili, e l'interruttore in alto a sinistra ti permette di leggerli in italiano o nel gergo inglese, che resta quello che troverai ovunque altrove.
+`,
+ fonte:"Struttura dei tornei verificata su fonti PokerStars aggiornate al 2025. La parte di strategia della serie nasce dal materiale di PokerStars School di Pete Clarke, ripreso in italiano da Andrea Borea su Assopoker. Testo interamente riscritto."},
+
+{id:"apertura-bottone",capitolo:"Preflop",occhiello:"Lezione 1",bb:25,tavolo:3,
+ titolo:"Apertura da bottone",
+ sommario:"Perché si apre largo, perché sempre della stessa misura, e perché di fronte a un all in si passa quasi tre volte su quattro.",
+ testo:`
+Da bottone parti con due vantaggi insieme: non hai versato niente al buio, e dopo il flop parli sempre per ultimo. Sono le condizioni migliori del tavolo, e giustificano un range di apertura largo.
+
+## Una sola misura, sempre
+
+Si apre con un min-rilancio, quindi a 40 quando i bui sono 10/20. Sempre, con qualsiasi mano.
+
+Il motivo non è il risparmio. È che cambiare misura a seconda della forza racconta all'avversario cosa hai, e con stack corti non te lo puoi permettere. C'è anche una ragione strutturale: se il grande buio paga, il piatto è 90 e restano 460 di stack effettivo. Quel rapporto lascia spazio a tre puntate, una per strada, e ti permette di costruire il piatto con calma invece di doverlo risolvere subito.
+
+> È anche il motivo per cui in questa fase non si rallenta con le mani forti. Se hai tre puntate a disposizione non ti serve nascondere: ti serve riempire il piatto.
+
+## Il range
+
+[[range:btn-apertura]]
+
+Il verde e il rosso insieme fanno il 38,8% delle mani. Largo, ma non qualunque cosa: la tentazione di aggiungere anche l'ultima spazzatura tipo 84s va resistita, perché quelle mani non hanno abbastanza potenziale per giocare un flop. Apri, ti pagano, e poi abbandoni regalando 40 alla volta.
+
+Guarda dove passa il confine: K3s si butta, K4s si apre. Q4s si butta, Q5s si apre. Non sono soglie arbitrarie, sono il punto in cui la mano smette di poter reggere una strada successiva.
+
+## Il conto che spaventa
+
+Con questo range, di fronte a un all in, passerai il **74%** delle volte. Sembra una resa, e vale la pena vedere perché non lo è.
+
+Immagina che il grande buio spinga con A7o. Quando passi, lui incassa 70: il tuo rilancio più i due bui. Se succede nel 74% dei casi, quella fetta vale +51,8.
+
+Nel restante 26% tu paghi, e lo fai con la parte verde della tabella. Lì lui si ritrova con circa il 30% di equity in un piatto da 1010: recupera in media 303 fiches su 480 investite, quindi perde 177. Pesata per il 26%, fa −46.
+
+Sommando, il suo all in resta appena positivo. Contro di te, però, guadagna molto meno di quanto crede, e questo vale solo perché quel 26% è composto da mani vere.
+
+## Quando restringere
+
+La tabella presuppone avversari nella media. Se dopo poche mani ti accorgi che al tavolo ci sono giocatori forti, oppure gente che spinge all in di continuo nei primi livelli, stringi. Succede spesso ai buy-in bassi e sui moltiplicatori piccoli.
+
+La logica è semplice: il furto dei bui rende finché gli avversari passano. Quando non passano più, stai solo pagando per giocare piatti scomodi.
+
+## Attenzione alla profondità
+
+Tutto quanto sopra vale a 25 bui, cioè sui moltiplicatori x10 e oltre. A 15 bui il min-rilancio impegna una fetta troppo grande dello stack rispetto a quello che resta dietro, e l'impianto a tre puntate non regge. Quella situazione ha bisogno di tabelle sue, che non sono ancora in questo manuale.
+`,
+ fonte:"Tabella trascritta dalla griglia PokerStars School ripresa da Assopoker. Testo riscritto. La percentuale del 74% è ricalcolata sulle combinazioni, non copiata: torna."}
+];
+
+/* ╔═══ BLOCCO 4 — MOTORE ═════════════════════════════════════╗ */
+const RANK=[...'AKQJT98765432'], iR=r=>RANK.indexOf(r);
+let LINGUA='it';
+const glo=id=>GLOSSARIO.find(g=>g.id===id);
+const L=o=>(o&&o[LINGUA])||(o&&o.it)||'';
+
+const mano=(i,j)=>i===j?RANK[i]+RANK[i]:(i<j?RANK[i]+RANK[j]+'s':RANK[j]+RANK[i]+'o');
+function tutte(){const m=[];for(let i=0;i<13;i++)for(let j=0;j<13;j++)m.push(mano(i,j));return m}
+const peso=h=>h.length===2?6:(h.endsWith('s')?4:12);
+
+function espandi(spec){
+  const out=new Set();
+  spec.split(',').map(s=>s.trim()).filter(Boolean).forEach(tok=>{
+    if(tok==='*'){tutte().forEach(h=>out.add(h));return}
+    if(tok.includes('-')){
+      const [a,b]=tok.split('-').map(s=>s.trim());
+      if(a.length===2&&b.length===2){
+        let x=iR(a[0]),y=iR(b[0]); if(x>y)[x,y]=[y,x];
+        for(let i=x;i<=y;i++)out.add(RANK[i]+RANK[i]);
+      }else if(a.length===3&&b.length===3&&a[0]===b[0]&&a[2]===b[2]){
+        let x=iR(a[1]),y=iR(b[1]); if(x>y)[x,y]=[y,x];
+        for(let i=x;i<=y;i++)out.add(a[0]+RANK[i]+a[2]);
+      }
+      return;
+    }
+    const piu=tok.endsWith('+'), base=piu?tok.slice(0,-1):tok;
+    if(base.length===2&&base[0]===base[1]){
+      if(piu){for(let i=iR(base[0]);i>=0;i--)out.add(RANK[i]+RANK[i])}else out.add(base);
+    }else if(base.length===3){
+      const [a,b,s]=base;
+      if(piu){for(let i=iR(b);i>iR(a);i--)out.add(a+RANK[i]+s)}else out.add(base);
+    }
+  });
+  return out;
+}
+function mappa(r){const m={};r.azioni.forEach(a=>espandi(a.m).forEach(h=>{if(!(h in m))m[h]=a.k}));return m}
+const chiaro=c=>c===C.grigio;
+
+function disegna(r){
+  const m=mappa(r), tot={};
+  Object.entries(m).forEach(([h,k])=>tot[k]=(tot[k]||0)+peso(h));
+  const box=document.createElement('div'); box.className='tabella';
+  box.innerHTML=`<div class="testata"><div class="titolo">${L(r.titolo)}</div>
+    <div class="meta">${r.tavolo} giocatori · ${r.bb} bui · ${L(r.meta)}</div></div>
+    <div class="griglia"></div><div class="legenda"></div>
+    ${r.nota&&L(r.nota)?`<p class="notaTab">${L(r.nota)}</p>`:''}
+    <div class="barra"><input placeholder="Cerca: A7o" aria-label="Cerca una mano">
+    <button class="bottone quizOn">Allenamento</button><span class="esito"></span></div>
+    <div class="quiz" hidden></div>`;
+  const grid=box.querySelector('.griglia');
+  for(let i=0;i<13;i++)for(let j=0;j<13;j++){
+    const h=mano(i,j), az=r.azioni.find(a=>a.k===m[h])||r.azioni[r.azioni.length-1];
+    const c=document.createElement('div');
+    c.className='cella'+(chiaro(az.c)?' chiaro':''); c.style.background=az.c;
+    c.dataset.mano=h; c.textContent=h; c.title=h+' — '+L(az.n);
+    grid.appendChild(c);
+  }
+  box.querySelector('.legenda').innerHTML=r.azioni.map(a=>{
+    const p=((tot[a.k]||0)/1326*100).toFixed(1).replace('.',',');
+    return `<span><i style="background:${a.c}"></i>${L(a.n)} <em>${p}%</em></span>`;
+  }).join('');
+
+  const inp=box.querySelector('input'), es=box.querySelector('.barra .esito');
+  inp.addEventListener('input',()=>{
+    const q=normalizza(inp.value);
+    box.querySelectorAll('.cella').forEach(c=>{
+      c.classList.remove('evidenzia');
+      c.classList.toggle('spenta',!!q&&c.dataset.mano!==q);
+    });
+    if(!q){es.textContent='';return}
+    const cel=box.querySelector('.cella[data-mano="'+q+'"]');
+    if(cel){cel.classList.add('evidenzia');
+      const az=r.azioni.find(a=>a.k===m[q])||r.azioni[r.azioni.length-1];
+      es.className='esito'; es.textContent=q+' → '+L(az.n).toLowerCase();
+    }else{es.className='esito';es.textContent='Mano non riconosciuta'}
+  });
+
+  const quiz=box.querySelector('.quiz'); let ok=0,tt=0;
+  box.querySelector('.quizOn').addEventListener('click',e=>{
+    const on=quiz.hidden; quiz.hidden=!on;
+    e.target.classList.toggle('pieno',on);
+    e.target.textContent=on?'Chiudi allenamento':'Allenamento';
+    if(on)domanda();
+  });
+  function domanda(){
+    const h=tutte()[Math.floor(Math.random()*169)];
+    const giusta=m[h]||r.azioni[r.azioni.length-1].k;
+    quiz.innerHTML=`<div class="mano">${h}</div><div class="contesto">${L(r.titolo)} · ${r.bb} bui</div>
+      <div class="op"></div><div class="esito"></div><div class="punteggio">${tt?ok+' su '+tt:'&nbsp;'}</div>`;
+    const op=quiz.querySelector('.op');
+    r.azioni.forEach(a=>{
+      const b=document.createElement('button');
+      b.className='bottone'; b.textContent=L(a.n);
+      b.style.cssText='margin:0 .4rem .4rem 0';
+      b.onclick=()=>{
+        tt++; const giusto=a.k===giusta; if(giusto)ok++;
+        const e2=quiz.querySelector('.esito');
+        e2.className='esito '+(giusto?'giusto':'sbagliato');
+        e2.textContent=giusto?'✓ Giusto':'✗ Era: '+L(r.azioni.find(x=>x.k===giusta).n).toLowerCase();
+        op.querySelectorAll('button').forEach(x=>x.disabled=true);
+        quiz.querySelector('.punteggio').textContent=ok+' su '+tt;
+        const av=document.createElement('button');
+        av.className='bottone pieno'; av.textContent='Mano successiva';
+        av.style.marginTop='.6rem'; av.onclick=domanda;
+        quiz.appendChild(av); av.focus();
+      };
+      op.appendChild(b);
+    });
+  }
+  return box;
+}
+function normalizza(v){
+  v=(v||'').trim().toUpperCase().replace(/10/g,'T');
+  if(v.length<2)return '';
+  let a=v[0],b=v[1],s=(v[2]||'').toLowerCase();
+  if(iR(a)<0||iR(b)<0)return '';
+  if(iR(a)>iR(b))[a,b]=[b,a];
+  return a===b?a+b:a+b+(s==='s'?'s':'o');
+}
+
+function componi(md){
+  return md.trim().split(/\n{2,}/).map(b=>{
+    b=b.trim();
+    const r=b.match(/^\[\[range:(.+?)\]\]$/);
+    if(r)return `<div data-range="${r[1]}"></div>`;
+    if(b.startsWith('## '))return `<h2>${inl(b.slice(3))}</h2>`;
+    if(b.startsWith('### '))return `<h3>${inl(b.slice(4))}</h3>`;
+    if(b.startsWith('> '))return `<blockquote><p>${inl(b.replace(/^> ?/gm,''))}</p></blockquote>`;
+    if(/^[-*] /.test(b))return `<ul>${b.split('\n').map(l=>`<li>${inl(l.replace(/^[-*] /,''))}</li>`).join('')}</ul>`;
+    return `<p>${inl(b)}</p>`;
+  }).join('\n');
+}
+const inl=t=>t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+
+/* riconoscimento dei termini */
+const VOCI=GLOSSARIO.flatMap(g=>g.alias.map(a=>({a,id:g.id}))).sort((x,y)=>y.a.length-x.a.length);
+const fuga=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const RE=new RegExp('(?<![\\p{L}\\p{N}])('+VOCI.map(v=>fuga(v.a)).join('|')+')(?![\\p{L}\\p{N}])','iu');
+
+function marca(root){
+  const usati=new Set(), salta=new Set(['A','H1','H2','H3','BUTTON','CODE']);
+  const nodi=[], tw=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+  while(tw.nextNode()){
+    const n=tw.currentNode, p=n.parentElement;
+    if(!p||p.closest('.tabella')||salta.has(p.tagName)||p.classList.contains('termine'))continue;
+    nodi.push(n);
+  }
+  nodi.forEach(n=>{
+    let t=n.nodeValue, pezzi=[], g=0;
+    while(g++<60){
+      const mt=t.match(RE); if(!mt)break;
+      const v=VOCI.find(x=>x.a.toLowerCase()===mt[1].toLowerCase());
+      const fine=mt.index+mt[1].length;
+      if(!v||usati.has(v.id)){pezzi.push(document.createTextNode(t.slice(0,fine)));t=t.slice(fine);continue}
+      usati.add(v.id);
+      pezzi.push(document.createTextNode(t.slice(0,mt.index)));
+      const b=document.createElement('button');
+      b.className='termine'; b.dataset.id=v.id; b.dataset.orig=mt[1];
+      b.textContent=mt[1]; pezzi.push(b);
+      t=t.slice(fine);
+    }
+    if(!pezzi.length)return;
+    pezzi.push(document.createTextNode(t));
+    const f=document.createDocumentFragment(); pezzi.forEach(p=>f.appendChild(p));
+    n.parentNode.replaceChild(f,n);
+  });
+  applicaLingua(root);
+}
+function applicaLingua(root){
+  (root||document).querySelectorAll('.termine[data-orig]').forEach(b=>{
+    const g=glo(b.dataset.id); if(!g)return;
+    if(LINGUA==='it'){b.textContent=b.dataset.orig;return}
+    const orig=b.dataset.orig;
+    let t=g.en;
+    if(orig[0]===orig[0].toUpperCase()&&orig[0]!==orig[0].toLowerCase())
+      t=t[0].toUpperCase()+t.slice(1);
+    else t=t[0].toLowerCase()+t.slice(1);
+    b.textContent=t;
+  });
+}
+
+/* suggerimento e pannello */
+const sugg=document.getElementById('suggerimento'), pannello=document.getElementById('pannello'),
+      velo=document.getElementById('velo'), corpo=document.getElementById('pannelloCorpo');
+document.addEventListener('mouseover',e=>{
+  const t=e.target.closest('.termine'); if(!t)return;
+  const g=glo(t.dataset.id); if(!g)return;
+  const primo=LINGUA==='it'?g.it:g.en, secondo=LINGUA==='it'?g.en:g.it;
+  sugg.innerHTML=`<b>${primo}</b>${primo!==secondo?`<u>${secondo}</u>`:'<u>&nbsp;</u>'}${g.breve}<i>Clicca per la scheda completa</i>`;
+  sugg.classList.add('on'); posiziona(t);
+});
+document.addEventListener('mouseout',e=>{if(e.target.closest('.termine'))sugg.classList.remove('on')});
+function posiziona(el){
+  const r=el.getBoundingClientRect(), w=Math.min(320,innerWidth-24);
+  sugg.style.width=w+'px';
+  let x=r.left,y=r.bottom+8;
+  if(x+w>innerWidth-12)x=innerWidth-w-12;
+  if(y+sugg.offsetHeight>innerHeight-12)y=r.top-sugg.offsetHeight-8;
+  sugg.style.left=x+'px'; sugg.style.top=y+'px';
+}
+document.addEventListener('click',e=>{
+  const t=e.target.closest('.termine, .pillola, .nomi');
+  if(t&&t.dataset.id)apri(t.dataset.id);
+});
+function apri(id){
+  const g=glo(id); if(!g)return;
+  sugg.classList.remove('on');
+  const primo=LINGUA==='it'?g.it:g.en, secondo=LINGUA==='it'?g.en:g.it;
+  corpo.innerHTML=`<div class="categoria">${g.cat}</div><h3>${primo}</h3>
+    <div class="altralingua">${primo!==secondo?secondo:'&nbsp;'}</div>${g.lungo}
+    ${g.vedi&&g.vedi.length?`<div class="collegati"><span>Vedi anche</span>${
+      g.vedi.map(v=>glo(v)?`<button class="pillola" data-id="${v}">${LINGUA==='it'?glo(v).it:glo(v).en}</button>`:'').join('')}</div>`:''}`;
+  pannello.classList.add('on'); velo.classList.add('on');
+  pannello.querySelector('.chiudi').focus();
+}
+const chiudi=()=>{pannello.classList.remove('on');velo.classList.remove('on')};
+velo.onclick=chiudi; pannello.querySelector('.chiudi').onclick=chiudi;
+document.addEventListener('keydown',e=>{if(e.key==='Escape')chiudi()});
+
+/* pagine */
+const pagina=document.getElementById('pagina');
+let vista={tipo:'lezione',id:'introduzione'};
+
+function render(){
+  if(vista.tipo==='lezione')lezione(vista.id);
+  else if(vista.tipo==='glossario')glossario();
+  else tabelle();
+}
+function lezione(id){
+  const l=LEZIONI.find(x=>x.id===id); if(!l)return;
+  pagina.innerHTML=`<div class="occhiello">${l.occhiello} · ${l.capitolo}${l.bb?' · '+l.bb+' bui':''}</div>
+    <h1>${l.titolo}</h1><p class="sommario">${l.sommario}</p>${componi(l.testo)}
+    <p class="fonte">${l.fonte}</p>`;
+  pagina.querySelectorAll('[data-range]').forEach(ph=>{
+    const r=RANGES.find(x=>x.id===ph.dataset.range); if(r)ph.replaceWith(disegna(r));
+  });
+  marca(pagina); fine('lezione:'+id);
+}
+function glossario(){
+  const voci=GLOSSARIO.slice().sort((a,b)=>(LINGUA==='it'?a.it:a.en).localeCompare(LINGUA==='it'?b.it:b.en));
+  pagina.innerHTML=`<div class="occhiello">Riferimento</div><h1>Glossario</h1>
+    <p class="sommario">${GLOSSARIO.length} voci, in italiano e in inglese. Cerca in una lingua o nell'altra.</p>
+    <input id="cerca" placeholder="Cerca un termine, in italiano o in inglese">
+    <div id="elenco"></div>`;
+  const el=pagina.querySelector('#elenco');
+  const stampa=q=>{
+    q=(q||'').toLowerCase().trim();
+    const f=voci.filter(g=>!q||g.it.toLowerCase().includes(q)||g.en.toLowerCase().includes(q)
+      ||g.alias.some(a=>a.includes(q))||g.breve.toLowerCase().includes(q));
+    el.innerHTML=f.length?f.map(g=>{
+      const p=LINGUA==='it'?g.it:g.en, s=LINGUA==='it'?g.en:g.it;
+      return `<div class="voce"><button class="nomi" data-id="${g.id}">${p}${p!==s?` <small>· ${s}</small>`:''}</button><p>${g.breve}</p></div>`;
+    }).join(''):`<div class="vuoto"><b>Nessun termine trovato</b>Se è una parola che ti serve, aggiungila: basta scriverla in chat e diventa una voce.</div>`;
+  };
+  stampa('');
+  pagina.querySelector('#cerca').addEventListener('input',e=>stampa(e.target.value));
+  fine('glossario');
+}
+function tabelle(){
+  const disp=[...new Set(RANGES.map(r=>r.bb))];
+  const bb=vista.bb||25;
+  pagina.innerHTML=`<div class="occhiello">Riferimento</div><h1>Tabelle dei range</h1>
+    <p class="sommario">Tavolo da tre giocatori. Cerca una mano, oppure apri l'allenamento per memorizzarle.</p>
+    <div class="profondita"><span>Profondità</span></div><div id="tab"></div>`;
+  const sel=pagina.querySelector('.profondita');
+  [15,20,25].forEach(v=>{
+    const b=document.createElement('button');
+    b.className='bottone'+(v===bb?' pieno':''); b.textContent=v+' bui';
+    b.onclick=()=>{vista={tipo:'tabelle',bb:v};render()};
+    sel.appendChild(b);
+  });
+  const cont=pagina.querySelector('#tab');
+  const lista=RANGES.filter(r=>r.bb===bb);
+  if(!lista.length){
+    cont.innerHTML=`<div class="vuoto"><b>Non ci sono ancora tabelle per ${bb} bui</b>
+      A questa profondità il gioco è quasi tutto push o fold, quindi servono tabelle calcolate
+      invece che riprese da una guida. È il prossimo pezzo da costruire.</div>`;
+  } else lista.forEach(r=>cont.appendChild(disegna(r)));
+  fine('tabelle');
+}
+function fine(k){
+  document.querySelectorAll('#indice a').forEach(a=>a.classList.toggle('attivo',a.dataset.k===k));
+  document.getElementById('nav').classList.remove('on');
+  scrollTo(0,0);
+}
+
+/* indice */
+(function(){
+  const el=document.getElementById('indice'); let h='';
+  [...new Set(LEZIONI.map(l=>l.capitolo))].forEach(c=>{
+    h+=`<h4>${c}</h4>`+LEZIONI.filter(l=>l.capitolo===c)
+      .map(l=>`<a href="#" data-k="lezione:${l.id}">${l.titolo}</a>`).join('');
+  });
+  h+=`<h4>In programma</h4>
+    <a class="futura">Apertura da piccolo buio</a>
+    <a class="futura">Difesa del grande buio</a>
+    <a class="futura">Contro i limper</a>
+    <a class="futura">Texture e c-bet</a>
+    <a class="futura">Gioco a 15 bui</a>
+    <a class="futura">Testa a testa</a>
+    <h4>Riferimento</h4>
+    <a href="#" data-k="tabelle">Tabelle dei range</a>
+    <a href="#" data-k="glossario">Glossario</a>`;
+  el.innerHTML=h;
+  el.addEventListener('click',e=>{
+    const a=e.target.closest('a[data-k]'); if(!a)return;
+    e.preventDefault();
+    const [t,id]=a.dataset.k.split(':');
+    vista=t==='lezione'?{tipo:'lezione',id}:(t==='glossario'?{tipo:'glossario'}:{tipo:'tabelle',bb:25});
+    render();
+  });
+})();
+
+document.querySelectorAll('.lingua button').forEach(b=>{
+  b.onclick=()=>{
+    LINGUA=b.dataset.l;
+    document.querySelectorAll('.lingua button').forEach(x=>x.classList.toggle('on',x===b));
+    render(); chiudi();
+  };
+});
+document.getElementById('apriMenu').onclick=()=>document.getElementById('nav').classList.toggle('on');
+render();
+</script>
+</body>
+</html>
