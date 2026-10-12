@@ -900,6 +900,45 @@ function nashHU(S) {
   return { pctSpinge: lo.pctSpinge + (hi.pctSpinge - lo.pctSpinge) * f, pctPaga: lo.pctPaga + (hi.pctPaga - lo.pctPaga) * f, lo, hi };
 }
 
+/**
+ * Equity di una mano concreta in un piatto a tre, contro due gamme (pesi per classe).
+ * Monte Carlo con seme fisso: si estraggono una mano per gamma (senza carte in comune) e un board.
+ */
+function equity3ControGamme(carte, pesiA, pesiB, { campioni = 4000, seme = 1 } = {}) {
+  const r = generatore(seme);
+  const mie = carte.map(codifica);
+  const lista = (pesi) => {
+    const voci = []; let tot = 0;
+    for (let j = 0; j < K; j++) if (pesi[j] > 0) for (const [a, b] of COMBO[j]) { tot += pesi[j]; voci.push({ c: [codifica(a), codifica(b)], cum: tot }); }
+    return { voci, tot };
+  };
+  const LA = lista(pesiA), LB = lista(pesiB);
+  if (!LA.tot || !LB.tot) return 0;
+  const estrai = (L, usate) => {
+    for (let t = 0; t < 100; t++) {
+      const x = r() * L.tot;
+      let lo = 0, hi = L.voci.length - 1;
+      while (lo < hi) { const m = (lo + hi) >> 1; if (L.voci[m].cum > x) hi = m; else lo = m + 1; }
+      const c = L.voci[lo].c;
+      if (!usate.has(c[0]) && !usate.has(c[1])) return c;
+    }
+    return null;
+  };
+  let somma = 0, n = 0;
+  for (let t = 0; t < campioni; t++) {
+    const usate = new Set(mie);
+    const a = estrai(LA, usate); if (!a) continue; a.forEach((c) => usate.add(c));
+    const b = estrai(LB, usate); if (!b) continue; b.forEach((c) => usate.add(c));
+    const board = [];
+    while (board.length < 5) { const c = Math.floor(r() * 52); if (!usate.has(c)) { usate.add(c); board.push(c); } }
+    const v = [mie, a, b].map((h) => valuta([...h, ...board]));
+    const best = Math.max(...v);
+    if (v[0] === best) somma += 1 / v.filter((x) => x === best).length;
+    n++;
+  }
+  return n ? somma / n : 0;
+}
+
 // Generato da build/calcola-3max.js. Non modificare a mano.
 // Per ogni profondità S (bui) e situazione: freq = frequenza di gioco per classe (0-9),
 // pct = mani giocate, ev = valore atteso di giocare meno passare, in centesimi di buio (base 36, 3 caratteri, scarto 23328).
@@ -992,9 +1031,33 @@ function gammaPerDecisione(m, d, S) {
   let x, tipo;
   if (d.eroeHaRilanciato) { x = Math.min(1, nh.pctPaga * 1.2); tipo = 'rilancio all in sopra la tua apertura'; }
   else if (d.eroeHaLimpato) { x = nh.pctSpinge; tipo = 'all in sopra il tuo limp'; }
+  else if (d.limpers > 0) {
+    const limper = m.azioni.find((x) => x.strada === 'preflop' && x.tipo === 'call' && x.nome !== m.eroe && x.totaleStrada <= m.bb);
+    const pos = limper ? m.giocatori.find((g) => g.nome === limper.nome).posizione : null;
+    x = nh.pctSpinge; tipo = `all in sopra il limp ${{ BTN: 'del bottone', SB: 'del piccolo buio', BB: 'del grande buio' }[pos] || 'di un avversario'}`;
+  }
   else if (n >= 3 && d.posizioneAggressore === 'BTN') { x = nh.pctSpinge * 0.6; tipo = 'all in dal bottone'; }
   else { x = nh.pctSpinge; tipo = 'all in in apertura'; }
   return { pesi: gammaMigliori(x), x, tipo, fonte: 'stima' };
+}
+
+/**
+ * Rischio del giocatore che parla dopo di te: se paghi, quanto spesso entra anche lui e con che mani.
+ * SCELTA: si usa la gamma con cui il grande buio sovrapaga dopo spinta e chiamata nella tabella a 3 giocatori
+ * (la stessa situazione vista da chi parla per ultimo); per chi aveva fatto limp è un'approssimazione.
+ * Se entra, si considera il piatto a tre con tutti dentro per l'importo dell'all in, e tu non aggiungi altro.
+ */
+function rischioDietro(m, d, S, gamma, nome) {
+  const g = m.giocatori.find((x) => x.nome === nome);
+  const t = tabella(3, 'bbSovrapaga', Math.min(S, PROFONDITA_MAX));
+  if (!t || !g) return null;
+  const q = t.pct;
+  const pesi = gammaMigliori(q);
+  const giaDentro = m.azioni.slice(0, d.indice).filter((a) => a.nome === nome).reduce((x, a) => x + a.importo, 0);
+  const totaleAllIn = d.daPagare + (m.azioni.slice(0, d.indice).filter((a) => a.nome === m.eroe).reduce((x, a) => x + a.importo, 0));
+  const aggiunge = Math.max(0, Math.min(g.stack, totaleAllIn) - giaDentro);
+  const eq3 = equity3ControGamme(d.carte, gamma.pesi, pesi, { campioni: 4000, seme: 11 });
+  return { nome, posizione: g.posizione, q, pesi, eq3, piatto3: d.piattoSeChiami + aggiunge };
 }
 
 /** Valore atteso in bui di pagare rispetto a passare, contro una gamma (pesi per classe). */
@@ -1018,15 +1081,27 @@ function verdettoChiamata(m, d) {
   const eroe = m.giocatori.find((g) => g.nome === m.eroe);
   const S = Math.min(eroe.stack, d.stackAggressore || eroe.stack) / m.bb;
   const gamma = gammaPerDecisione(m, d, S);
-  const { eq, ev } = evPaga(d, gamma.pesi, m.bb);
+  const { eq, ev: evSolo } = evPaga(d, gamma.pesi, m.bb);
+  // Un solo giocatore ancora da parlare: si stima quanto spesso entra nel piatto e quanto vale allora la mano.
+  const dopo = dietro.length === 1 ? rischioDietro(m, d, S, gamma, dietro[0]) : null;
+  const evCon = (x, fq = 1) => {
+    const solo = evPaga(d, gammaMigliori(Math.min(1, x)), m.bb).ev;
+    if (!dopo) return solo;
+    const q = Math.min(1, dopo.q * fq);
+    const eq3 = equity3ControGamme(d.carte, gammaMigliori(Math.min(1, x)), dopo.pesi, { campioni: 1500, seme: 7 });
+    return (1 - q) * solo + q * (eq3 * dopo.piatto3 - d.daPagare) / m.bb;
+  };
+  const ev = dopo ? (1 - dopo.q) * evSolo + dopo.q * (dopo.eq3 * dopo.piatto3 - d.daPagare) / m.bb : evSolo;
   const giusta = ev > 0 ? 'paga' : 'passa';
   const fatta = d.azione === 'fold' ? 'passa' : 'paga';
   const perso = giusta === fatta ? 0 : Math.abs(ev);
   // Robustezza: la scelta giusta cambia se la gamma è più stretta di un terzo o più larga della metà?
-  const stabile = [0.67, 1.5].every((f) => (evPaga(d, gammaMigliori(Math.min(1, gamma.x * f)), m.bb).ev > 0) === (ev > 0));
+  const varianti = [[0.67, 1], [1.5, 1]];
+  if (dopo) varianti.push([1, 0.5], [1, 1.5]);
+  const stabile = varianti.every(([fx, fq]) => (evCon(gamma.x * fx, fq) > 0) === (ev > 0));
   return {
     tipo: 'chiamata', valutabile: true, S: Math.round(S * 10) / 10, gamma: gamma.x, tipoGamma: gamma.tipo, fonte: gamma.fonte,
-    quota: d.quota, eq, ev, giusta, fatta, perso, gravita: gravitaDa(perso, !stabile || dietro.length > 0), stabile,
+    quota: d.quota, eq, ev, giusta, fatta, perso, gravita: gravitaDa(perso, !stabile || dietro.length > 1), stabile, evSolo, dopo,
     soglia: sogliaGamma(d.carte, d.quota),
     dietro,
   };
@@ -1398,11 +1473,14 @@ function bloccoVerdetto(m, d) {
   if (!v || !v.valutabile) return `<div class="verdetto"><p>${base}</p>${v ? `<p>${esc(v.motivo)}.</p>` : ''}</div>`;
   const mano = notazione(d.carte);
   const titolo = v.gravita === 'errore' ? `Errore: dovevi ${v.giusta === 'paga' ? 'pagare' : 'passare'}` : v.gravita === 'rivedere' ? `Da rivedere: ${v.giusta === 'paga' ? 'pagare' : 'passare'} rendeva di più` : `Giusto: ${v.fatta === 'paga' ? 'pagare' : 'passare'}`;
-  const soglia = v.soglia === 0 ? `${mano} paga contro qualsiasi all in a questo prezzo.` : v.soglia === 1 ? `${mano} non arriva alla quota nemmeno contro un all in con tutte le mani.` : `Pagare conviene se l'avversario va all in con più del <b>${pct(v.soglia)}</b> delle mani.`;
+  const soglia = v.soglia === 0 ? `${mano} paga contro qualsiasi all in a questo prezzo.` : v.soglia === 1 ? `${mano} non arriva alla quota nemmeno contro un all in con tutte le mani.` : `${v.dopo ? 'Contro il solo avversario all in, pagare' : 'Pagare'} conviene se va all in con più del <b>${pct(v.soglia)}</b> delle mani.`;
   const valore = Math.abs(v.ev) < 0.05 ? 'Pagare e passare quasi si equivalgono.' : `Pagando ${v.ev > 0 ? 'guadagni' : 'perdi'} in media <b>${num(Math.abs(v.ev))} bui</b> rispetto a passare.`;
   const note = [];
-  if (v.dietro.length) note.push(`Dopo di te doveva ancora parlare ${esc(v.dietro.join(', '))}: il verdetto resta prudente.`);
-  else if (!v.stabile) note.push('La scelta giusta cambia se l\'avversario è molto più stretto o più largo di così.');
+  if (v.dopo) {
+    const pos = { BTN: 'il bottone', SB: 'il piccolo buio', BB: 'il grande buio' }[v.dopo.posizione] || esc(v.dopo.nome);
+    note.push(`Dopo di te doveva ancora parlare ${esc(v.dopo.nome)} (${v.dopo.posizione}). Se paghi, ${pos} entra anche lui circa il ${Math.round(v.dopo.q * 100)}% delle volte, e in quel caso ${esc(mano)} vince il ${pct(v.dopo.eq3)} di un piatto da ${v.dopo.piatto3}. Contro il solo avversario all in pagare valeva ${v.evSolo >= 0 ? '+' : '−'}${num(Math.abs(v.evSolo))} bui; tenendo conto ${{ BTN: 'del bottone', SB: 'del piccolo buio', BB: 'del grande buio' }[v.dopo.posizione] || 'di ' + esc(v.dopo.nome)} vale ${v.ev >= 0 ? '+' : '−'}${num(Math.abs(v.ev))}.`);
+  } else if (v.dietro.length) note.push(`Dopo di te dovevano ancora parlare ${esc(v.dietro.join(', '))}: il verdetto resta prudente.`);
+  if (!v.stabile) note.push(v.dopo ? 'La scelta giusta cambia se l\'avversario è più stretto o più largo di così, o se chi parla dopo entra più spesso: per questo resta «da rivedere».' : 'La scelta giusta cambia se l\'avversario è molto più stretto o più largo di così.');
   return `<div class="verdetto ${v.gravita}">
     <p class="titolo-v">${titolo}</p>
     <div class="barra-eq" role="img" aria-label="Equity ${pct(v.eq)}, quota ${pct(v.quota)}"><span class="riempi" style="width:${(v.eq * 100).toFixed(1)}%"></span><span class="segno" style="left:${(v.quota * 100).toFixed(1)}%"></span></div>

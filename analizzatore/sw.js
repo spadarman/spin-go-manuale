@@ -1,5 +1,5 @@
 // Service worker dell'analizzatore. Versione = impronta della pagina: ogni build nuova sostituisce la cache.
-const CACHE = 'analizzatore-3e7b6cf3a87a';
+const CACHE = 'analizzatore-19b73db38616';
 const FILE = ["./","index.html","manifest.webmanifest","icone/icona-192.png","icone/icona-512.png","icone/icona-maskable-512.png","icone/apple-touch-icon.png"];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILE)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', (e) => {
