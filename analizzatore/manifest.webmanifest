@@ -1,0 +1,29 @@
+{
+  "name": "Analizzatore mani Spin & Go",
+  "short_name": "Mani",
+  "description": "Analisi delle mani Spin & Go giocate su Sisal.",
+  "lang": "it",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#EFF0EC",
+  "theme_color": "#1F4436",
+  "icons": [
+    {
+      "src": "icone/icona-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icone/icona-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icone/icona-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
