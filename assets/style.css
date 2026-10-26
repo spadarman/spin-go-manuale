@@ -39,6 +39,12 @@ strong{font-weight:600}
 .sommario{font-size:1.12rem;color:var(--inchiostro-soft);margin-bottom:2rem;max-width:58ch}
 blockquote{margin:1.5rem 0;padding:.9rem 1.1rem;background:var(--carta-alt);border-left:3px solid var(--feltro);font-size:.96rem}
 blockquote p:last-child{margin:0}
+.dati{margin:1.3rem 0 1.8rem;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.dati table{border-collapse:collapse;width:100%;font-family:var(--sans);font-size:14px;font-variant-numeric:tabular-nums;line-height:1.35}
+.dati th{text-align:right;font-weight:600;font-size:12.5px;color:var(--inchiostro-soft);border-bottom:1.5px solid var(--inchiostro);padding:.45rem 0 .45rem .9rem;vertical-align:bottom}
+.dati td{text-align:right;border-bottom:1px solid var(--linea);padding:.5rem 0 .5rem .9rem;white-space:nowrap}
+.dati th:first-child,.dati td:first-child{text-align:left;padding-left:0;white-space:normal}
+.dati strong{color:var(--feltro)}
 .fonte{font-size:.85rem;color:var(--inchiostro-soft);border-top:1px solid var(--linea);padding-top:.8rem;margin-top:3rem}
 
 .termine{border:0;border-bottom:1.5px dotted var(--ocra);cursor:pointer;color:inherit;background:none;font:inherit;padding:0}

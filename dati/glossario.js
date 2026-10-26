@@ -12,7 +12,7 @@ const GLOSSARIO = [
 {id:"moltiplicatore",it:"Moltiplicatore",en:"Multiplier",cat:"Formato",
  alias:["moltiplicatore","moltiplicatori","multiplier","spinner"],
  breve:"Il numero sorteggiato a inizio partita che stabilisce il montepremi, lo stack e la durata dei livelli.",
- lungo:"<p>Non decide solo quanto si vince. Dal novembre 2024 su PokerStars determina anche le fiches di partenza e la velocità dei bui: x2 e x3 partono con 15 bui, dal x4 con 20, dal x10 con 25.</p><p>Cambia anche la struttura dei premi: fino al x3 vince tutto il primo, dal x10 in su pagano tre posizioni.</p>",
+ lungo:"<p>Non decide solo quanto si vince. Dal novembre 2024 su PokerStars e su Sisal determina anche le fiches di partenza e la velocità dei bui: x2 e x3 partono con 300 fiches (15 bui), x4 e x5 con 400 (20 bui), dal x10 con 500 (25 bui).</p><p>Le frequenze sono squilibratissime: su Sisal x2 e x3 escono l'87% delle volte, x4 e x5 l'11,5%, dal x10 in su circa una volta su cento. Cambia anche la struttura dei premi: fino al x5 vince tutto il primo, con il x10 viene pagato anche il secondo, dal x25 tutti e tre.</p>",
  vedi:["spin-go","stack-effettivo","icm"]},
 
 {id:"varianza",it:"Varianza",en:"Variance",cat:"Mentale",
@@ -253,5 +253,35 @@ const GLOSSARIO = [
  alias:["icm","independent chip model"],
  breve:"Il modello che traduce le fiches in soldi quando la struttura dei premi paga più posizioni.",
  lungo:"<p>Nei tornei le fiches non valgono linearmente: raddoppiare lo stack non raddoppia il guadagno atteso. L'ICM stima quanto vale in denaro il tuo stack date la struttura e gli stack degli altri.</p><p>Conta poco quando vince tutto il primo, e parecchio sui moltiplicatori alti dove pagano tre posizioni.</p>",
- vedi:["moltiplicatore","spin-go"]}
+ vedi:["moltiplicatore","spin-go"]},
+
+{id:"rake",it:"Rake",en:"Rake",cat:"Formato",
+ alias:["rake","fee","commissione","commissioni","quota d'iscrizione"],
+ breve:"La parte del buy-in che la sala trattiene prima di formare il montepremi.",
+ lungo:"<p>Negli Spin &amp; Go non si paga mano per mano: la commissione è già dentro l'iscrizione. Su Sisal è il 10% a 0,50 €, il 9% da 1 a 5 €, l'8% a 10 € e il 7% dal 25 € in su.</p><p>Sembra poco, ma si paga a ogni partita, e una partita dura pochi minuti. Il giocatore medio, che vince una volta su tre, perde esattamente la rake: circa un buy-in ogni dieci partite ai buy-in bassi.</p>",
+ vedi:["pareggio","win-rate","roi"]},
+
+{id:"win-rate",it:"Percentuale di vittorie",en:"Win rate",cat:"Matematica",
+ alias:["percentuale di vittorie","percentuale di vittoria","percentuale di vincita","win rate","winrate","win-rate"],
+ breve:"Quante partite vinci su cento. In tre giocatori la media è il 33,3%.",
+ lungo:"<p>È la misura più semplice del proprio livello negli Spin &amp; Go, perché si ricava direttamente dal resoconto dei tornei. Per coprire la rake su Sisal serve circa il 37%: tre partite su otto.</p><p>Le differenze sembrano minuscole e non lo sono. Tra il 35% e il 39% passa la distanza tra perdere il 5% di ogni buy-in e guadagnarne il 5%. E su poche partite mente: con mille tornei la forbice è di circa tre punti in su o in giù.</p>",
+ vedi:["pareggio","roi","cev"]},
+
+{id:"pareggio",it:"Pareggio",en:"Break-even",cat:"Matematica",
+ alias:["punto di pareggio","pareggio","break-even","break even","breakeven"],
+ breve:"Il livello di gioco con cui, sul lungo periodo, non vinci e non perdi: copri esattamente la rake.",
+ lungo:"<p>Si esprime in percentuale di vittorie o in cEV. Su Sisal è circa il 37,1% di vittorie a 0,50 € e il 36,7% a 5 €.</p><p>Sotto il pareggio il saldo scende anche giocando in modo decente, perché la commissione si paga sempre e il vantaggio no.</p>",
+ vedi:["rake","win-rate","cev"]},
+
+{id:"roi",it:"ROI",en:"ROI",cat:"Matematica",
+ alias:["roi","ritorno sull'investimento","return on investment"],
+ breve:"Quanto guadagni in media in rapporto a quanto spendi: il 5% vuol dire 5 centesimi per ogni euro di iscrizione.",
+ lungo:"<p>Negli Spin &amp; Go si misura sul totale delle iscrizioni pagate. Un buon professionista sta tra il 3% e il 5%; chi supera il 6% è tra i migliori.</p><p>Su Sisal, con la rake del 9-10%, per un ROI del 5% bisogna vincere circa il 38,5-39% delle partite.</p>",
+ vedi:["win-rate","pareggio","rake"]},
+
+{id:"cev",it:"cEV",en:"cEV",cat:"Matematica",
+ alias:["cev","chip ev","chip-ev","chip expected value"],
+ breve:"Le fiches guadagnate in media per partita rispetto allo stack di partenza. È la misura che usano i professionisti.",
+ lungo:"<p>Si conta in fiches e non in euro proprio per togliere di mezzo la ruota: un x2 e un x100 pesano allo stesso modo, e resta solo la bravura al tavolo.</p><p>Per andare in pari serve una cEV positiva che copra la rake. Partendo da 300 fiches, su Sisal servono circa 30 fiches a partita con la rake al 9% e circa 33 al 10%. Per misurarla però servono le fiches finali di ogni partita, non solo il piazzamento.</p>",
+ vedi:["win-rate","pareggio","valore-atteso"]}
 ];

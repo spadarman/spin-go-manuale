@@ -127,6 +127,13 @@ function componi(md){
     if(b.startsWith('### '))return `<h3>${inl(b.slice(4))}</h3>`;
     if(b.startsWith('> '))return `<blockquote><p>${inl(b.replace(/^> ?/gm,''))}</p></blockquote>`;
     if(/^[-*] /.test(b))return `<ul>${b.split('\n').map(l=>`<li>${inl(l.replace(/^[-*] /,''))}</li>`).join('')}</ul>`;
+    if(b.startsWith('|')){
+      const righe=b.split('\n').map(l=>l.trim()).filter(l=>l&&!/^\|[\s:|-]+\|$/.test(l));
+      const celle=l=>l.replace(/^\||\|$/g,'').split('|').map(c=>inl(c.trim()));
+      const testa=celle(righe[0]).map(c=>`<th>${c}</th>`).join('');
+      const corpo=righe.slice(1).map(r=>`<tr>${celle(r).map(c=>`<td>${c}</td>`).join('')}</tr>`).join('');
+      return `<div class="dati"><table><thead><tr>${testa}</tr></thead><tbody>${corpo}</tbody></table></div>`;
+    }
     return `<p>${inl(b)}</p>`;
   }).join('\n');
 }
@@ -292,12 +299,12 @@ function fine(k){
       .map(l=>`<a href="#" data-k="lezione:${l.id}">${l.titolo}</a>`).join('');
   });
   h+=`<h4>In programma</h4>
+    <a class="futura">Gioco a 15 bui</a>
+    <a class="futura">Testa a testa</a>
     <a class="futura">Apertura da piccolo buio</a>
     <a class="futura">Difesa del grande buio</a>
     <a class="futura">Contro i limper</a>
     <a class="futura">Texture e c-bet</a>
-    <a class="futura">Gioco a 15 bui</a>
-    <a class="futura">Testa a testa</a>
     <h4>Riferimento</h4>
     <a href="#" data-k="tabelle">Tabelle dei range</a>
     <a href="#" data-k="glossario">Glossario</a>`;
