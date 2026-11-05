@@ -1,0 +1,14 @@
+# Tema scuro di Streamlit (i widget nativi: multiselect, tabelle, uploader).
+# Il CSS in app.py forza il resto della pagina.
+[theme]
+base = "dark"
+primaryColor = "#FACC15"
+backgroundColor = "#0B0F14"
+secondaryBackgroundColor = "#151B23"
+textColor = "#F3F4F6"
+
+[client]
+toolbarMode = "minimal"
+
+[browser]
+gatherUsageStats = false
